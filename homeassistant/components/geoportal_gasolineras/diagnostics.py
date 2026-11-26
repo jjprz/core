@@ -14,8 +14,5 @@ async def async_get_config_entry_diagnostics(
     """Return diagnostics for a config entry (all public data)."""
     return {
         "entry": entry.as_dict(),
-        "stations": {
-            station_id: asdict(station)
-            for station_id, station in entry.runtime_data.data.items()
-        },
+        "data": asdict(entry.runtime_data.data),
     }

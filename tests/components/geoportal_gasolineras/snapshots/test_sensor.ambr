@@ -1,5 +1,107 @@
 # serializer version: 1
-# name: test_sensors[sensor.cooperativa_la_roda_de_andalucia_diesel_a-entry]
+# name: test_entities[binary_sensor][binary_sensor.cooperativa_la_roda_de_andalucia_open-entry]
+  EntityRegistryEntrySnapshot({
+    'aliases': list([
+      None,
+    ]),
+    'area_id': None,
+    'capabilities': None,
+    'config_entry_id': <ANY>,
+    'config_subentry_id': <ConfigSubentry subentry_type='station' title='Cooperativa La Roda de Andalucía'>,
+    'device_class': None,
+    'device_id': <DeviceEntry identifiers=[('geoportal_gasolineras', '9683')]>,
+    'disabled_by': None,
+    'domain': 'binary_sensor',
+    'entity_category': None,
+    'entity_id': 'binary_sensor.cooperativa_la_roda_de_andalucia_open',
+    'has_entity_name': True,
+    'hidden_by': None,
+    'icon': None,
+    'id': <ANY>,
+    'labels': set({
+    }),
+    'name': None,
+    'object_id_base': 'Open',
+    'options': dict({
+    }),
+    'original_device_class': None,
+    'original_icon': None,
+    'original_name': 'Open',
+    'platform': 'geoportal_gasolineras',
+    'previous_unique_id': None,
+    'suggested_object_id': None,
+    'supported_features': 0,
+    'translation_key': 'open',
+    'unique_id': '9683_open',
+    'unit_of_measurement': None,
+  })
+# ---
+# name: test_entities[binary_sensor][binary_sensor.cooperativa_la_roda_de_andalucia_open-state]
+  StateSnapshot({
+    'attributes': ReadOnlyDict({
+      <EntityStateAttribute.ATTRIBUTION: 'attribution'>: 'Data provided by the Spanish Ministry (Geoportal Gasolineras)',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Cooperativa La Roda de Andalucía Open',
+    }),
+    'context': <ANY>,
+    'entity_id': 'binary_sensor.cooperativa_la_roda_de_andalucia_open',
+    'last_changed': <ANY>,
+    'last_reported': <ANY>,
+    'last_updated': <ANY>,
+    'state': 'on',
+  })
+# ---
+# name: test_entities[binary_sensor][binary_sensor.repsol_la_roda_de_andalucia_open-entry]
+  EntityRegistryEntrySnapshot({
+    'aliases': list([
+      None,
+    ]),
+    'area_id': None,
+    'capabilities': None,
+    'config_entry_id': <ANY>,
+    'config_subentry_id': <ConfigSubentry subentry_type='station' title='Repsol La Roda de Andalucía'>,
+    'device_class': None,
+    'device_id': <DeviceEntry identifiers=[('geoportal_gasolineras', '7370')]>,
+    'disabled_by': None,
+    'domain': 'binary_sensor',
+    'entity_category': None,
+    'entity_id': 'binary_sensor.repsol_la_roda_de_andalucia_open',
+    'has_entity_name': True,
+    'hidden_by': None,
+    'icon': None,
+    'id': <ANY>,
+    'labels': set({
+    }),
+    'name': None,
+    'object_id_base': 'Open',
+    'options': dict({
+    }),
+    'original_device_class': None,
+    'original_icon': None,
+    'original_name': 'Open',
+    'platform': 'geoportal_gasolineras',
+    'previous_unique_id': None,
+    'suggested_object_id': None,
+    'supported_features': 0,
+    'translation_key': 'open',
+    'unique_id': '7370_open',
+    'unit_of_measurement': None,
+  })
+# ---
+# name: test_entities[binary_sensor][binary_sensor.repsol_la_roda_de_andalucia_open-state]
+  StateSnapshot({
+    'attributes': ReadOnlyDict({
+      <EntityStateAttribute.ATTRIBUTION: 'attribution'>: 'Data provided by the Spanish Ministry (Geoportal Gasolineras)',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Repsol La Roda de Andalucía Open',
+    }),
+    'context': <ANY>,
+    'entity_id': 'binary_sensor.repsol_la_roda_de_andalucia_open',
+    'last_changed': <ANY>,
+    'last_reported': <ANY>,
+    'last_updated': <ANY>,
+    'state': 'on',
+  })
+# ---
+# name: test_entities[sensor][sensor.cooperativa_la_roda_de_andalucia_diesel_a-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -41,7 +143,7 @@
     'unit_of_measurement': '€/L',
   })
 # ---
-# name: test_sensors[sensor.cooperativa_la_roda_de_andalucia_diesel_a-state]
+# name: test_entities[sensor][sensor.cooperativa_la_roda_de_andalucia_diesel_a-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.ATTRIBUTION: 'attribution'>: 'Data provided by the Spanish Ministry (Geoportal Gasolineras)',
@@ -57,7 +159,7 @@
     'state': '1.802',
   })
 # ---
-# name: test_sensors[sensor.cooperativa_la_roda_de_andalucia_diesel_b-entry]
+# name: test_entities[sensor][sensor.cooperativa_la_roda_de_andalucia_diesel_b-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -99,7 +201,7 @@
     'unit_of_measurement': '€/L',
   })
 # ---
-# name: test_sensors[sensor.cooperativa_la_roda_de_andalucia_diesel_b-state]
+# name: test_entities[sensor][sensor.cooperativa_la_roda_de_andalucia_diesel_b-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.ATTRIBUTION: 'attribution'>: 'Data provided by the Spanish Ministry (Geoportal Gasolineras)',
@@ -115,7 +217,177 @@
     'state': '1.477',
   })
 # ---
-# name: test_sensors[sensor.repsol_la_roda_de_andalucia_diesel_a-entry]
+# name: test_entities[sensor][sensor.gasoleo_a_la_roda_de_andalucia_average_price-entry]
+  EntityRegistryEntrySnapshot({
+    'aliases': list([
+      None,
+    ]),
+    'area_id': None,
+    'capabilities': dict({
+      <SensorEntityCapabilityAttribute.STATE_CLASS: 'state_class'>: <SensorStateClass.MEASUREMENT: 'measurement'>,
+    }),
+    'config_entry_id': <ANY>,
+    'config_subentry_id': <ConfigSubentry subentry_type='zone' title='Gasoleo A – La Roda de Andalucía'>,
+    'device_class': None,
+    'device_id': <DeviceEntry identifiers=[('geoportal_gasolineras', 'zone_6139_diesel_a')]>,
+    'disabled_by': None,
+    'domain': 'sensor',
+    'entity_category': None,
+    'entity_id': 'sensor.gasoleo_a_la_roda_de_andalucia_average_price',
+    'has_entity_name': True,
+    'hidden_by': None,
+    'icon': None,
+    'id': <ANY>,
+    'labels': set({
+    }),
+    'name': None,
+    'object_id_base': 'Average price',
+    'options': dict({
+      'sensor': dict({
+        'suggested_display_precision': 3,
+      }),
+    }),
+    'original_device_class': None,
+    'original_icon': None,
+    'original_name': 'Average price',
+    'platform': 'geoportal_gasolineras',
+    'previous_unique_id': None,
+    'suggested_object_id': None,
+    'supported_features': 0,
+    'translation_key': 'average_price',
+    'unique_id': 'zone_6139_diesel_a_average_price',
+    'unit_of_measurement': '€/L',
+  })
+# ---
+# name: test_entities[sensor][sensor.gasoleo_a_la_roda_de_andalucia_average_price-state]
+  StateSnapshot({
+    'attributes': ReadOnlyDict({
+      <EntityStateAttribute.ATTRIBUTION: 'attribution'>: 'Data provided by the Spanish Ministry (Geoportal Gasolineras)',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Gasoleo A – La Roda de Andalucía Average price',
+      <SensorEntityCapabilityAttribute.STATE_CLASS: 'state_class'>: <SensorStateClass.MEASUREMENT: 'measurement'>,
+      <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: '€/L',
+    }),
+    'context': <ANY>,
+    'entity_id': 'sensor.gasoleo_a_la_roda_de_andalucia_average_price',
+    'last_changed': <ANY>,
+    'last_reported': <ANY>,
+    'last_updated': <ANY>,
+    'state': '1.855',
+  })
+# ---
+# name: test_entities[sensor][sensor.gasoleo_a_la_roda_de_andalucia_cheapest_station-entry]
+  EntityRegistryEntrySnapshot({
+    'aliases': list([
+      None,
+    ]),
+    'area_id': None,
+    'capabilities': None,
+    'config_entry_id': <ANY>,
+    'config_subentry_id': <ConfigSubentry subentry_type='zone' title='Gasoleo A – La Roda de Andalucía'>,
+    'device_class': None,
+    'device_id': <DeviceEntry identifiers=[('geoportal_gasolineras', 'zone_6139_diesel_a')]>,
+    'disabled_by': None,
+    'domain': 'sensor',
+    'entity_category': None,
+    'entity_id': 'sensor.gasoleo_a_la_roda_de_andalucia_cheapest_station',
+    'has_entity_name': True,
+    'hidden_by': None,
+    'icon': None,
+    'id': <ANY>,
+    'labels': set({
+    }),
+    'name': None,
+    'object_id_base': 'Cheapest station',
+    'options': dict({
+    }),
+    'original_device_class': None,
+    'original_icon': None,
+    'original_name': 'Cheapest station',
+    'platform': 'geoportal_gasolineras',
+    'previous_unique_id': None,
+    'suggested_object_id': None,
+    'supported_features': 0,
+    'translation_key': 'cheapest_station',
+    'unique_id': 'zone_6139_diesel_a_cheapest_station',
+    'unit_of_measurement': None,
+  })
+# ---
+# name: test_entities[sensor][sensor.gasoleo_a_la_roda_de_andalucia_cheapest_station-state]
+  StateSnapshot({
+    'attributes': ReadOnlyDict({
+      <EntityStateAttribute.ATTRIBUTION: 'attribution'>: 'Data provided by the Spanish Ministry (Geoportal Gasolineras)',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Gasoleo A – La Roda de Andalucía Cheapest station',
+      'price': 1.825,
+      'station_id': '7370',
+      'stations': 2,
+    }),
+    'context': <ANY>,
+    'entity_id': 'sensor.gasoleo_a_la_roda_de_andalucia_cheapest_station',
+    'last_changed': <ANY>,
+    'last_reported': <ANY>,
+    'last_updated': <ANY>,
+    'state': 'Repsol – Carretera Malaga, Granada, Sevilla Km. 124,90',
+  })
+# ---
+# name: test_entities[sensor][sensor.gasoleo_a_la_roda_de_andalucia_lowest_price-entry]
+  EntityRegistryEntrySnapshot({
+    'aliases': list([
+      None,
+    ]),
+    'area_id': None,
+    'capabilities': dict({
+      <SensorEntityCapabilityAttribute.STATE_CLASS: 'state_class'>: <SensorStateClass.MEASUREMENT: 'measurement'>,
+    }),
+    'config_entry_id': <ANY>,
+    'config_subentry_id': <ConfigSubentry subentry_type='zone' title='Gasoleo A – La Roda de Andalucía'>,
+    'device_class': None,
+    'device_id': <DeviceEntry identifiers=[('geoportal_gasolineras', 'zone_6139_diesel_a')]>,
+    'disabled_by': None,
+    'domain': 'sensor',
+    'entity_category': None,
+    'entity_id': 'sensor.gasoleo_a_la_roda_de_andalucia_lowest_price',
+    'has_entity_name': True,
+    'hidden_by': None,
+    'icon': None,
+    'id': <ANY>,
+    'labels': set({
+    }),
+    'name': None,
+    'object_id_base': 'Lowest price',
+    'options': dict({
+      'sensor': dict({
+        'suggested_display_precision': 3,
+      }),
+    }),
+    'original_device_class': None,
+    'original_icon': None,
+    'original_name': 'Lowest price',
+    'platform': 'geoportal_gasolineras',
+    'previous_unique_id': None,
+    'suggested_object_id': None,
+    'supported_features': 0,
+    'translation_key': 'lowest_price',
+    'unique_id': 'zone_6139_diesel_a_lowest_price',
+    'unit_of_measurement': '€/L',
+  })
+# ---
+# name: test_entities[sensor][sensor.gasoleo_a_la_roda_de_andalucia_lowest_price-state]
+  StateSnapshot({
+    'attributes': ReadOnlyDict({
+      <EntityStateAttribute.ATTRIBUTION: 'attribution'>: 'Data provided by the Spanish Ministry (Geoportal Gasolineras)',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Gasoleo A – La Roda de Andalucía Lowest price',
+      <SensorEntityCapabilityAttribute.STATE_CLASS: 'state_class'>: <SensorStateClass.MEASUREMENT: 'measurement'>,
+      <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: '€/L',
+    }),
+    'context': <ANY>,
+    'entity_id': 'sensor.gasoleo_a_la_roda_de_andalucia_lowest_price',
+    'last_changed': <ANY>,
+    'last_reported': <ANY>,
+    'last_updated': <ANY>,
+    'state': '1.825',
+  })
+# ---
+# name: test_entities[sensor][sensor.repsol_la_roda_de_andalucia_diesel_a-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -157,11 +429,13 @@
     'unit_of_measurement': '€/L',
   })
 # ---
-# name: test_sensors[sensor.repsol_la_roda_de_andalucia_diesel_a-state]
+# name: test_entities[sensor][sensor.repsol_la_roda_de_andalucia_diesel_a-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.ATTRIBUTION: 'attribution'>: 'Data provided by the Spanish Ministry (Geoportal Gasolineras)',
       <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Repsol La Roda de Andalucía Diesel A',
+      'latitude': 37.214444,
+      'longitude': -4.777056,
       <SensorEntityCapabilityAttribute.STATE_CLASS: 'state_class'>: <SensorStateClass.MEASUREMENT: 'measurement'>,
       <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: '€/L',
     }),
@@ -173,7 +447,7 @@
     'state': '1.825',
   })
 # ---
-# name: test_sensors[sensor.repsol_la_roda_de_andalucia_gasoline_95_e5-entry]
+# name: test_entities[sensor][sensor.repsol_la_roda_de_andalucia_gasoline_95_e5-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -215,11 +489,13 @@
     'unit_of_measurement': '€/L',
   })
 # ---
-# name: test_sensors[sensor.repsol_la_roda_de_andalucia_gasoline_95_e5-state]
+# name: test_entities[sensor][sensor.repsol_la_roda_de_andalucia_gasoline_95_e5-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.ATTRIBUTION: 'attribution'>: 'Data provided by the Spanish Ministry (Geoportal Gasolineras)',
       <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Repsol La Roda de Andalucía Gasoline 95 E5',
+      'latitude': 37.214444,
+      'longitude': -4.777056,
       <SensorEntityCapabilityAttribute.STATE_CLASS: 'state_class'>: <SensorStateClass.MEASUREMENT: 'measurement'>,
       <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: '€/L',
     }),
@@ -231,7 +507,7 @@
     'state': '1.575',
   })
 # ---
-# name: test_sensors[sensor.repsol_la_roda_de_andalucia_premium_diesel-entry]
+# name: test_entities[sensor][sensor.repsol_la_roda_de_andalucia_premium_diesel-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -273,11 +549,13 @@
     'unit_of_measurement': '€/L',
   })
 # ---
-# name: test_sensors[sensor.repsol_la_roda_de_andalucia_premium_diesel-state]
+# name: test_entities[sensor][sensor.repsol_la_roda_de_andalucia_premium_diesel-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.ATTRIBUTION: 'attribution'>: 'Data provided by the Spanish Ministry (Geoportal Gasolineras)',
       <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Repsol La Roda de Andalucía Premium diesel',
+      'latitude': 37.214444,
+      'longitude': -4.777056,
       <SensorEntityCapabilityAttribute.STATE_CLASS: 'state_class'>: <SensorStateClass.MEASUREMENT: 'measurement'>,
       <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: '€/L',
     }),
@@ -287,5 +565,57 @@
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': '1.875',
+  })
+# ---
+# name: test_entities[sensor][sensor.repsol_la_roda_de_andalucia_prices_updated-entry]
+  EntityRegistryEntrySnapshot({
+    'aliases': list([
+      None,
+    ]),
+    'area_id': None,
+    'capabilities': None,
+    'config_entry_id': <ANY>,
+    'config_subentry_id': <ConfigSubentry subentry_type='station' title='Repsol La Roda de Andalucía'>,
+    'device_class': None,
+    'device_id': <DeviceEntry identifiers=[('geoportal_gasolineras', '7370')]>,
+    'disabled_by': None,
+    'domain': 'sensor',
+    'entity_category': <EntityCategory.DIAGNOSTIC: 'diagnostic'>,
+    'entity_id': 'sensor.repsol_la_roda_de_andalucia_prices_updated',
+    'has_entity_name': True,
+    'hidden_by': None,
+    'icon': None,
+    'id': <ANY>,
+    'labels': set({
+    }),
+    'name': None,
+    'object_id_base': 'Prices updated',
+    'options': dict({
+    }),
+    'original_device_class': <SensorDeviceClass.TIMESTAMP: 'timestamp'>,
+    'original_icon': None,
+    'original_name': 'Prices updated',
+    'platform': 'geoportal_gasolineras',
+    'previous_unique_id': None,
+    'suggested_object_id': None,
+    'supported_features': 0,
+    'translation_key': 'updated_at',
+    'unique_id': '7370_updated_at',
+    'unit_of_measurement': None,
+  })
+# ---
+# name: test_entities[sensor][sensor.repsol_la_roda_de_andalucia_prices_updated-state]
+  StateSnapshot({
+    'attributes': ReadOnlyDict({
+      <EntityStateAttribute.ATTRIBUTION: 'attribution'>: 'Data provided by the Spanish Ministry (Geoportal Gasolineras)',
+      <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'timestamp',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Repsol La Roda de Andalucía Prices updated',
+    }),
+    'context': <ANY>,
+    'entity_id': 'sensor.repsol_la_roda_de_andalucia_prices_updated',
+    'last_changed': <ANY>,
+    'last_reported': <ANY>,
+    'last_updated': <ANY>,
+    'state': '2026-11-26T15:31:39+00:00',
   })
 # ---

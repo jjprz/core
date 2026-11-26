@@ -6,6 +6,7 @@ from aioprecioscarburantes import PreciosCarburantesConnectionError
 from pytest_homeassistant.common import MockConfigEntry
 
 from homeassistant.components.geoportal_gasolineras.const import (
+    CONF_MUNICIPALITY_ID,
     CONF_STATION_ID,
     SUBENTRY_TYPE_STATION,
 )
@@ -16,7 +17,7 @@ from homeassistant.core import HomeAssistant
 async def test_setup_and_unload(
     hass: HomeAssistant, mock_client: AsyncMock, mock_config_entry: MockConfigEntry
 ) -> None:
-    """Test one request per municipality and one per station added by code."""
+    """Test one request per municipality, shared by stations and zones."""
     mock_config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
     assert mock_config_entry.state is ConfigEntryState.LOADED
@@ -30,7 +31,7 @@ async def test_setup_and_unload(
 async def test_setup_retry_when_all_fail(
     hass: HomeAssistant, mock_client: AsyncMock, mock_config_entry: MockConfigEntry
 ) -> None:
-    """Test setup is retried when no station can be fetched."""
+    """Test setup is retried when nothing can be fetched."""
     mock_client.get_stations_by_municipality.side_effect = (
         PreciosCarburantesConnectionError
     )
@@ -55,7 +56,7 @@ async def test_partial_failure(
 async def test_reload_on_new_station(
     hass: HomeAssistant, mock_client: AsyncMock, mock_config_entry: MockConfigEntry
 ) -> None:
-    """Test adding a station reloads the entry and creates its sensors."""
+    """Test adding a station reloads the entry and creates its entities."""
     mock_config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
     hass.config_entries.async_add_subentry(
@@ -64,10 +65,13 @@ async def test_reload_on_new_station(
             subentry_type=SUBENTRY_TYPE_STATION,
             title="Shell La Roda de Andalucía",
             unique_id="6440",
-            data={"municipality_id": "6139", CONF_STATION_ID: "6440"},
+            data={CONF_MUNICIPALITY_ID: "6139", CONF_STATION_ID: "6440"},
         ),
     )
     await hass.async_block_till_done()
     assert (
         hass.states.get("sensor.shell_la_roda_de_andalucia_diesel_a").state == "1.885"
+    )
+    assert (
+        hass.states.get("binary_sensor.shell_la_roda_de_andalucia_open").state == "on"
     )

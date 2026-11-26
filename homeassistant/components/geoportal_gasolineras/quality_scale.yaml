@@ -1,17 +1,13 @@
 rules:
   # Bronze
-  action-setup:
-    status: exempt
-    comment: This integration does not provide actions.
+  action-setup: done
   appropriate-polling: done
   brands: done
   common-modules: done
   config-flow-test-coverage: done
   config-flow: done
   dependency-transparency: done
-  docs-actions:
-    status: exempt
-    comment: This integration does not provide actions.
+  docs-actions: done
   docs-conditions:
     status: exempt
     comment: This integration does not provide conditions.
@@ -32,13 +28,9 @@ rules:
   unique-config-entry: done
 
   # Silver
-  action-exceptions:
-    status: exempt
-    comment: This integration does not provide actions.
+  action-exceptions: done
   config-entry-unloading: done
-  docs-configuration-parameters:
-    status: exempt
-    comment: There is no options flow.
+  docs-configuration-parameters: done
   docs-installation-parameters: todo
   entity-unavailable: done
   integration-owner: done
@@ -78,12 +70,8 @@ rules:
   entity-translations: done
   exception-translations: done
   icon-translations: done
-  reconfiguration-flow:
-    status: exempt
-    comment: The config entry has no settings; stations are added and removed as subentries.
-  repair-issues:
-    status: exempt
-    comment: There are no issues the user can repair.
+  reconfiguration-flow: done
+  repair-issues: done
   stale-devices:
     status: exempt
     comment: Each station is a subentry; removing it removes its device.

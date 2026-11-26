@@ -8,7 +8,7 @@
     },
     "step": {
       "user": {
-        "description": "Follow the prices of Spanish fuel stations. After adding the integration, add each station with **Add fuel station**."
+        "description": "Follow the prices of Spanish fuel stations. After adding the integration, add stations with **Add fuel station**, or compare a whole municipality with **Add zone**."
       }
     }
   },
@@ -16,15 +16,17 @@
     "station": {
       "abort": {
         "already_configured": "This fuel station is already added.",
-        "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]"
+        "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+        "no_stations": "There are no fuel stations left to add in this municipality."
       },
       "entry_type": "Fuel station",
       "error": {
         "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
-        "no_stations": "There are no fuel stations in this municipality.",
+        "no_stations_nearby": "There are no fuel stations left to add within this distance.",
         "station_not_found": "There is no fuel station with this code."
       },
       "initiate_flow": {
+        "reconfigure": "Reconfigure fuel station",
         "user": "Add fuel station"
       },
       "step": {
@@ -36,12 +38,33 @@
             "municipality_id": "Municipality where the fuel station is."
           }
         },
+        "nearby": {
+          "data": {
+            "province_id": "Province",
+            "radius": "Distance"
+          },
+          "data_description": {
+            "province_id": "Province where the fuel station is.",
+            "radius": "Maximum distance from your home location."
+          },
+          "title": "Near home"
+        },
         "province": {
           "data": {
             "province_id": "Province"
           },
           "data_description": {
             "province_id": "Province where the fuel station is."
+          }
+        },
+        "reconfigure": {
+          "data": {
+            "name": "[%key:common::config_flow::data::name%]",
+            "show_on_map": "Show on map"
+          },
+          "data_description": {
+            "name": "Name of the fuel station device.",
+            "show_on_map": "Add the location to the price sensors, so they are shown on the map card."
           }
         },
         "station": {
@@ -61,16 +84,58 @@
           }
         },
         "user": {
+          "description": "Choose a fuel station from a list, near your home or by its code. Stations that only sell to members or fleets, such as cooperatives, can only be added by code.",
           "menu_options": {
+            "nearby": "Near home",
             "province": "Choose from a list",
             "station_code": "Enter the station code"
+          }
+        }
+      }
+    },
+    "zone": {
+      "abort": {
+        "already_configured": "This zone is already added.",
+        "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]"
+      },
+      "entry_type": "Zone",
+      "initiate_flow": {
+        "user": "Add zone"
+      },
+      "step": {
+        "fuel": {
+          "data": {
+            "fuel": "Fuel"
           },
-          "description": "Choose a fuel station from a list by province and municipality, or enter its code. Stations that only sell to members or fleets, such as cooperatives, can only be added by code."
+          "data_description": {
+            "fuel": "Fuel whose prices you want to compare."
+          }
+        },
+        "municipality": {
+          "data": {
+            "municipality_id": "Municipality"
+          },
+          "data_description": {
+            "municipality_id": "Municipality whose fuel stations are compared."
+          }
+        },
+        "province": {
+          "data": {
+            "province_id": "Province"
+          },
+          "data_description": {
+            "province_id": "Province of the municipality."
+          }
         }
       }
     }
   },
   "entity": {
+    "binary_sensor": {
+      "open": {
+        "name": "Open"
+      }
+    },
     "sensor": {
       "adblue": {
         "name": "AdBlue"
@@ -78,11 +143,28 @@
       "ammonia": {
         "name": "Ammonia"
       },
+      "average_price": {
+        "name": "Average price"
+      },
       "biodiesel": {
         "name": "Biodiesel"
       },
       "bioethanol": {
         "name": "Bioethanol"
+      },
+      "cheapest_station": {
+        "name": "Cheapest station",
+        "state_attributes": {
+          "price": {
+            "name": "Price"
+          },
+          "station_id": {
+            "name": "Station code"
+          },
+          "stations": {
+            "name": "Stations"
+          }
+        }
       },
       "compressed_biogas": {
         "name": "Compressed biogas"
@@ -129,6 +211,9 @@
       "liquefied_natural_gas": {
         "name": "Liquefied natural gas"
       },
+      "lowest_price": {
+        "name": "Lowest price"
+      },
       "lpg": {
         "name": "LPG"
       },
@@ -140,12 +225,75 @@
       },
       "renewable_gasoline": {
         "name": "Renewable gasoline"
+      },
+      "updated_at": {
+        "name": "Prices updated"
       }
     }
   },
   "exceptions": {
     "cannot_connect": {
       "message": "Error communicating with the Geoportal Gasolineras service."
+    },
+    "not_loaded": {
+      "message": "Spain fuel prices is not set up."
+    }
+  },
+  "issues": {
+    "station_removed": {
+      "fix_flow": {
+        "abort": {
+          "station_already_removed": "The fuel station was already removed."
+        },
+        "step": {
+          "confirm": {
+            "description": "The fuel station {name} is no longer listed by the Ministry; it may have closed. Select **Submit** to remove it.",
+            "title": "[%key:component::geoportal_gasolineras::issues::station_removed::title%]"
+          }
+        }
+      },
+      "title": "Fuel station {name} is no longer listed"
+    }
+  },
+  "selector": {
+    "fuel": {
+      "options": {
+        "adblue": "AdBlue",
+        "ammonia": "Ammonia",
+        "biodiesel": "Biodiesel",
+        "bioethanol": "Bioethanol",
+        "compressed_biogas": "Compressed biogas",
+        "compressed_natural_gas": "Compressed natural gas",
+        "diesel_a": "Diesel A",
+        "diesel_b": "Diesel B",
+        "diesel_premium": "Premium diesel",
+        "gasoline_95_e10": "Gasoline 95 E10",
+        "gasoline_95_e25": "Gasoline 95 E25",
+        "gasoline_95_e5": "Gasoline 95 E5",
+        "gasoline_95_e5_premium": "Premium gasoline 95 E5",
+        "gasoline_95_e85": "Gasoline 95 E85",
+        "gasoline_98_e10": "Gasoline 98 E10",
+        "gasoline_98_e5": "Gasoline 98 E5",
+        "hydrogen": "Hydrogen",
+        "liquefied_biogas": "Liquefied biogas",
+        "liquefied_natural_gas": "Liquefied natural gas",
+        "lpg": "LPG",
+        "methanol": "Methanol",
+        "renewable_diesel": "Renewable diesel",
+        "renewable_gasoline": "Renewable gasoline"
+      }
+    }
+  },
+  "services": {
+    "get_prices": {
+      "description": "Returns the prices of your fuel stations, cheapest first when a fuel is given.",
+      "fields": {
+        "fuel": {
+          "description": "Only return stations selling this fuel, with its price.",
+          "name": "Fuel"
+        }
+      },
+      "name": "Get prices"
     }
   }
 }

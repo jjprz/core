@@ -1,13 +1,21 @@
 """Data update coordinator for Spain fuel prices (Geoportal Gasolineras)."""
 
 from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime
 import logging
 from typing import override
 
-from aioprecioscarburantes import PreciosCarburantes, PreciosCarburantesError, Station
+from aioprecioscarburantes import (
+    PreciosCarburantes,
+    PreciosCarburantesError,
+    PreciosCarburantesNotFoundError,
+    Station,
+)
 
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, ConfigSubentry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
@@ -17,6 +25,7 @@ from .const import (
     DOMAIN,
     SCAN_INTERVAL,
     SUBENTRY_TYPE_STATION,
+    SUBENTRY_TYPE_ZONE,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -24,8 +33,25 @@ _LOGGER = logging.getLogger(__name__)
 type GeoportalGasolinerasConfigEntry = ConfigEntry[GeoportalGasolinerasCoordinator]
 
 
-class GeoportalGasolinerasCoordinator(DataUpdateCoordinator[dict[str, Station]]):
-    """Fetch the prices of all configured fuel stations."""
+@dataclass
+class GeoportalGasolinerasData:
+    """Fetched stations."""
+
+    # Configured stations by id
+    stations: dict[str, Station] = field(default_factory=dict)
+    # When the Ministry published the prices of a station from the official list
+    updated_at: dict[str, datetime] = field(default_factory=dict)
+    # All stations of the municipalities of the zones
+    municipalities: dict[str, list[Station]] = field(default_factory=dict)
+
+
+def removed_issue_id(subentry: ConfigSubentry) -> str:
+    """Return the id of the repair issue of a station that disappeared."""
+    return f"station_removed_{subentry.subentry_id}"
+
+
+class GeoportalGasolinerasCoordinator(DataUpdateCoordinator[GeoportalGasolinerasData]):
+    """Fetch the prices of all configured fuel stations and zones."""
 
     config_entry: GeoportalGasolinerasConfigEntry
 
@@ -43,46 +69,82 @@ class GeoportalGasolinerasCoordinator(DataUpdateCoordinator[dict[str, Station]])
         self.client = PreciosCarburantes(session=async_get_clientsession(hass))
 
     @override
-    async def _async_update_data(self) -> dict[str, Station]:
+    async def _async_update_data(self) -> GeoportalGasolinerasData:
         """Fetch the stations, one request per municipality.
 
         Stations added by code have no municipality; they are read from the
         Geoportal web, which also lists stations with restricted sales. A station
-        that cannot be fetched is left out, so only its sensors become unavailable.
+        that cannot be fetched is left out, so only its entities become unavailable.
         """
-        by_municipality: defaultdict[str, set[str]] = defaultdict(set)
-        by_code: set[str] = set()
-        for subentry in self.config_entry.get_subentries_of_type(SUBENTRY_TYPE_STATION):
-            station_id: str = subentry.data[CONF_STATION_ID]
+        entry = self.config_entry
+        stations = entry.get_subentries_of_type(SUBENTRY_TYPE_STATION)
+        zones = entry.get_subentries_of_type(SUBENTRY_TYPE_ZONE)
+        by_municipality: defaultdict[str, list[ConfigSubentry]] = defaultdict(list)
+        by_code: list[ConfigSubentry] = []
+        for subentry in stations:
             if municipality_id := subentry.data.get(CONF_MUNICIPALITY_ID):
-                by_municipality[municipality_id].add(station_id)
+                by_municipality[municipality_id].append(subentry)
             else:
-                by_code.add(station_id)
+                by_code.append(subentry)
+        zone_municipalities = {zone.data[CONF_MUNICIPALITY_ID] for zone in zones}
 
-        stations: dict[str, Station] = {}
-        failed = 0
-        for municipality_id, station_ids in by_municipality.items():
+        data = GeoportalGasolinerasData()
+        requests = failed = 0
+        for municipality_id in by_municipality.keys() | zone_municipalities:
+            requests += 1
             try:
                 result = await self.client.get_stations_by_municipality(municipality_id)
             except PreciosCarburantesError as err:
                 _LOGGER.debug("Cannot fetch municipality %s: %s", municipality_id, err)
                 failed += 1
                 continue
-            stations.update(
-                (station.id, station)
-                for station in result.stations
-                if station.id in station_ids
-            )
-        for station_id in by_code:
+            listed = {station.id: station for station in result.stations}
+            if municipality_id in zone_municipalities:
+                data.municipalities[municipality_id] = result.stations
+            for subentry in by_municipality.get(municipality_id, []):
+                station_id = subentry.data[CONF_STATION_ID]
+                if station := listed.get(station_id):
+                    data.stations[station_id] = station
+                    data.updated_at[station_id] = result.updated_at
+                self._update_removed_issue(subentry, removed=station is None)
+        for subentry in by_code:
+            requests += 1
+            station_id = subentry.data[CONF_STATION_ID]
             try:
-                stations[station_id] = await self.client.get_station_by_id(station_id)
+                data.stations[station_id] = await self.client.get_station_by_id(
+                    station_id
+                )
+            except PreciosCarburantesNotFoundError:
+                self._update_removed_issue(subentry, removed=True)
             except PreciosCarburantesError as err:
                 _LOGGER.debug("Cannot fetch station %s: %s", station_id, err)
                 failed += 1
+            else:
+                self._update_removed_issue(subentry, removed=False)
 
-        if failed and failed == len(by_municipality) + len(by_code):
+        if failed and failed == requests:
             raise UpdateFailed(
                 translation_domain=DOMAIN,
                 translation_key="cannot_connect",
             )
-        return stations
+        return data
+
+    def _update_removed_issue(self, subentry: ConfigSubentry, *, removed: bool) -> None:
+        """Offer to delete a station that is no longer listed."""
+        issue_id = removed_issue_id(subentry)
+        if not removed:
+            ir.async_delete_issue(self.hass, DOMAIN, issue_id)
+            return
+        ir.async_create_issue(
+            self.hass,
+            DOMAIN,
+            issue_id,
+            is_fixable=True,
+            severity=ir.IssueSeverity.WARNING,
+            translation_key="station_removed",
+            translation_placeholders={"name": subentry.title},
+            data={
+                "entry_id": self.config_entry.entry_id,
+                "subentry_id": subentry.subentry_id,
+            },
+        )

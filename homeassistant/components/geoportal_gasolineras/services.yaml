@@ -1,0 +1,30 @@
+get_prices:
+  fields:
+    fuel:
+      selector:
+        select:
+          translation_key: fuel
+          options:
+            - "adblue"
+            - "ammonia"
+            - "biodiesel"
+            - "bioethanol"
+            - "compressed_biogas"
+            - "liquefied_biogas"
+            - "renewable_diesel"
+            - "compressed_natural_gas"
+            - "liquefied_natural_gas"
+            - "lpg"
+            - "diesel_a"
+            - "diesel_b"
+            - "diesel_premium"
+            - "gasoline_95_e10"
+            - "gasoline_95_e25"
+            - "gasoline_95_e5"
+            - "gasoline_95_e5_premium"
+            - "gasoline_95_e85"
+            - "gasoline_98_e10"
+            - "gasoline_98_e5"
+            - "renewable_gasoline"
+            - "hydrogen"
+            - "methanol"
