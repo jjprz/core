@@ -39,13 +39,17 @@ class GeoportalGasolinerasCoordinator(DataUpdateCoordinator[Station]):
             update_interval=SCAN_INTERVAL,
         )
         self.client = PreciosCarburantes(session=async_get_clientsession(hass))
-        self.municipality_id: str = config_entry.data[CONF_MUNICIPALITY_ID]
+        # Stations added by code have no municipality; they are read from the
+        # Geoportal web, which also lists stations with restricted sales.
+        self.municipality_id: str | None = config_entry.data.get(CONF_MUNICIPALITY_ID)
         self.station_id: str = config_entry.data[CONF_STATION_ID]
 
     @override
     async def _async_update_data(self) -> Station:
         """Fetch the station and its prices."""
         try:
+            if self.municipality_id is None:
+                return await self.client.get_station_by_id(self.station_id)
             return await self.client.get_station(self.municipality_id, self.station_id)
         except PreciosCarburantesNotFoundError as err:
             raise UpdateFailed(

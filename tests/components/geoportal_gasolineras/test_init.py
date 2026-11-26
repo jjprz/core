@@ -41,3 +41,19 @@ async def test_setup_retry(
     mock_config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
     assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
+
+
+async def test_setup_by_code(
+    hass: HomeAssistant,
+    mock_client: AsyncMock,
+    mock_config_entry_by_code: MockConfigEntry,
+) -> None:
+    """Test a station added by code is read from the Geoportal web."""
+    mock_config_entry_by_code.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(mock_config_entry_by_code.entry_id)
+    mock_client.get_station_by_id.assert_called_with("9683")
+    mock_client.get_station.assert_not_called()
+    assert (
+        hass.states.get("sensor.cooperativa_roda_de_andalucia_la_diesel_b").state
+        == "1.477"
+    )

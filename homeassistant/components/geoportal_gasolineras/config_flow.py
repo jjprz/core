@@ -3,7 +3,12 @@
 import logging
 from typing import Any, override
 
-from aioprecioscarburantes import PreciosCarburantes, PreciosCarburantesError, Station
+from aioprecioscarburantes import (
+    PreciosCarburantes,
+    PreciosCarburantesError,
+    PreciosCarburantesNotFoundError,
+    Station,
+)
 import probatio
 
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
@@ -13,6 +18,7 @@ from homeassistant.helpers.selector import (
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
+    TextSelector,
 )
 
 from .const import CONF_MUNICIPALITY_ID, CONF_PROVINCE_ID, CONF_STATION_ID, DOMAIN
@@ -54,6 +60,43 @@ class GeoportalGasolinerasConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
+        """Choose how to find the station."""
+        return self.async_show_menu(
+            step_id="user", menu_options=["province", "station_code"]
+        )
+
+    async def async_step_station_code(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Add a station by its code, also one with restricted sales."""
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            station_id = user_input[CONF_STATION_ID].strip()
+            try:
+                station = await self._client.get_station_by_id(station_id)
+            except PreciosCarburantesNotFoundError:
+                errors["base"] = "station_not_found"
+            except PreciosCarburantesError:
+                _LOGGER.debug("Cannot get station %s", station_id, exc_info=True)
+                errors["base"] = "cannot_connect"
+            else:
+                await self.async_set_unique_id(station.id)
+                self._abort_if_unique_id_configured()
+                return self.async_create_entry(
+                    title=station_title(station),
+                    data={CONF_STATION_ID: station.id},
+                )
+        return self.async_show_form(
+            step_id="station_code",
+            data_schema=probatio.Schema(
+                {probatio.Required(CONF_STATION_ID): TextSelector()}
+            ),
+            errors=errors,
+        )
+
+    async def async_step_province(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         """Choose the province."""
         if user_input is not None:
             self._province_id = user_input[CONF_PROVINCE_ID]
@@ -68,7 +111,7 @@ class GeoportalGasolinerasConfigFlow(ConfigFlow, domain=DOMAIN):
             for province in provinces
         ]
         return self.async_show_form(
-            step_id="user",
+            step_id="province",
             data_schema=probatio.Schema(
                 {probatio.Required(CONF_PROVINCE_ID): _selector(options)}
             ),

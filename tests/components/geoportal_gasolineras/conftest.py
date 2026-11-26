@@ -3,7 +3,7 @@
 from collections.abc import Generator
 from unittest.mock import AsyncMock, patch
 
-from aioprecioscarburantes import Municipality, Province, StationList
+from aioprecioscarburantes import Municipality, Province, Station, StationList
 import pytest
 from pytest_homeassistant.common import (
     MockConfigEntry,
@@ -31,6 +31,17 @@ def mock_config_entry() -> MockConfigEntry:
             CONF_MUNICIPALITY_ID: "6139",
             CONF_STATION_ID: "7370",
         },
+    )
+
+
+@pytest.fixture
+def mock_config_entry_by_code() -> MockConfigEntry:
+    """Return the cooperative, added by code."""
+    return MockConfigEntry(
+        domain=DOMAIN,
+        title="Cooperativa Roda De Andalucia (La)",
+        unique_id="9683",
+        data={CONF_STATION_ID: "9683"},
     )
 
 
@@ -69,4 +80,7 @@ def mock_client() -> Generator[AsyncMock]:
         ]
         client.get_stations_by_municipality.return_value = stations
         client.get_station.return_value = stations.stations[0]
+        client.get_station_by_id.return_value = Station.from_geoportal(
+            load_json_object_fixture("geoportal_estacion.json", DOMAIN)
+        )
         yield client
