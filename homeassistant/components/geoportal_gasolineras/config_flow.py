@@ -63,7 +63,8 @@ def _selector(options: list[SelectOptionDict], *, sort: bool = True) -> SelectSe
 
 
 def _station_label(station: Station) -> str:
-    return f"{brand_name(station.brand)} – {station.address.title()}"
+    address = " ".join(station.address.split()).strip(" ,")
+    return f"{brand_name(station.brand)} – {address.title()}"
 
 
 class GeoportalGasolinerasConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -314,9 +315,15 @@ class StationSubentryFlow(_LocationSubentryFlow):
         }
         if not self._stations:
             return self.async_abort(reason="no_stations")
-        self._labels = {
-            station.id: _station_label(station) for station in self._stations.values()
-        }
+        self._labels = dict(
+            sorted(
+                (
+                    (station.id, _station_label(station))
+                    for station in self._stations.values()
+                ),
+                key=lambda item: item[1],
+            )
+        )
         return await self.async_step_station()
 
     async def async_step_station(

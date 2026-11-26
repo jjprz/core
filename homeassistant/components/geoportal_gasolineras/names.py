@@ -25,7 +25,14 @@ def brand_name(brand: str) -> str:
 
 def station_name(station: Station, taken: set[str]) -> str:
     """Return brand and municipality, adding the address if the name is taken."""
-    name = f"{brand_name(station.brand)} {municipality_name(station.municipality)}"
+    brand = brand_name(station.brand)
+    municipality = municipality_name(station.municipality)
+    # Some brands already include the town, such as "GAFISUR ANTEQUERA"
+    name = (
+        brand
+        if municipality.casefold() in brand.casefold()
+        else f"{brand} {municipality}"
+    )
     if name in taken:
         name = f"{name} ({station.address.title()})"
     return name
