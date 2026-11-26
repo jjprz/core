@@ -16,32 +16,36 @@ from homeassistant.components.geoportal_gasolineras.const import (
     CONF_PROVINCE_ID,
     CONF_STATION_ID,
     DOMAIN,
+    SUBENTRY_TYPE_STATION,
 )
+from homeassistant.config_entries import ConfigSubentryData
 
 
 @pytest.fixture
 def mock_config_entry() -> MockConfigEntry:
-    """Return the Repsol station config entry."""
+    """Return the entry with a station from the list and one added by code."""
     return MockConfigEntry(
         domain=DOMAIN,
-        title="Repsol Roda De Andalucia (La)",
-        unique_id="7370",
-        data={
-            CONF_PROVINCE_ID: "41",
-            CONF_MUNICIPALITY_ID: "6139",
-            CONF_STATION_ID: "7370",
-        },
-    )
-
-
-@pytest.fixture
-def mock_config_entry_by_code() -> MockConfigEntry:
-    """Return the cooperative, added by code."""
-    return MockConfigEntry(
-        domain=DOMAIN,
-        title="Cooperativa Roda De Andalucia (La)",
-        unique_id="9683",
-        data={CONF_STATION_ID: "9683"},
+        title="Spain fuel prices",
+        data={},
+        subentries_data=[
+            ConfigSubentryData(
+                subentry_type=SUBENTRY_TYPE_STATION,
+                title="Repsol La Roda de Andalucía",
+                unique_id="7370",
+                data={
+                    CONF_PROVINCE_ID: "41",
+                    CONF_MUNICIPALITY_ID: "6139",
+                    CONF_STATION_ID: "7370",
+                },
+            ),
+            ConfigSubentryData(
+                subentry_type=SUBENTRY_TYPE_STATION,
+                title="Cooperativa La Roda de Andalucía",
+                unique_id="9683",
+                data={CONF_STATION_ID: "9683"},
+            ),
+        ],
     )
 
 
@@ -79,7 +83,6 @@ def mock_client() -> Generator[AsyncMock]:
             for item in load_json_array_fixture("municipios.json", DOMAIN)
         ]
         client.get_stations_by_municipality.return_value = stations
-        client.get_station.return_value = stations.stations[0]
         client.get_station_by_id.return_value = Station.from_geoportal(
             load_json_object_fixture("geoportal_estacion.json", DOMAIN)
         )

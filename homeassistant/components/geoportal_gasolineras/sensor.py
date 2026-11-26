@@ -5,13 +5,14 @@ from typing import override
 from aioprecioscarburantes import FuelType
 
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
+from homeassistant.config_entries import ConfigSubentry
 from homeassistant.const import CURRENCY_EURO, UnitOfMass, UnitOfVolume
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import ATTRIBUTION, DOMAIN
+from .const import ATTRIBUTION, CONF_STATION_ID, DOMAIN, SUBENTRY_TYPE_STATION
 from .coordinator import (
     GeoportalGasolinerasConfigEntry,
     GeoportalGasolinerasCoordinator,
@@ -36,11 +37,27 @@ async def async_setup_entry(
     entry: GeoportalGasolinerasConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up a price sensor for each fuel the station sells."""
+    """Set up a price sensor for each fuel each station sells."""
     coordinator = entry.runtime_data
-    async_add_entities(
-        FuelPriceSensor(coordinator, fuel) for fuel in coordinator.data.prices
-    )
+    added: set[tuple[str, FuelType]] = set()
+
+    @callback
+    def async_add_sensors() -> None:
+        """Add sensors for stations and fuels not seen before."""
+        for subentry in entry.get_subentries_of_type(SUBENTRY_TYPE_STATION):
+            station_id: str = subentry.data[CONF_STATION_ID]
+            if (station := coordinator.data.get(station_id)) is None:
+                continue
+            new = [fuel for fuel in station.prices if (station_id, fuel) not in added]
+            added.update((station_id, fuel) for fuel in new)
+            if new:
+                async_add_entities(
+                    (FuelPriceSensor(coordinator, subentry, fuel) for fuel in new),
+                    config_subentry_id=subentry.subentry_id,
+                )
+
+    async_add_sensors()
+    entry.async_on_unload(coordinator.async_add_listener(async_add_sensors))
 
 
 class FuelPriceSensor(CoordinatorEntity[GeoportalGasolinerasCoordinator], SensorEntity):
@@ -52,19 +69,23 @@ class FuelPriceSensor(CoordinatorEntity[GeoportalGasolinerasCoordinator], Sensor
     _attr_suggested_display_precision = 3
 
     def __init__(
-        self, coordinator: GeoportalGasolinerasCoordinator, fuel: FuelType
+        self,
+        coordinator: GeoportalGasolinerasCoordinator,
+        subentry: ConfigSubentry,
+        fuel: FuelType,
     ) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator)
         self._fuel = fuel
-        station = coordinator.data
+        self._station_id: str = subentry.data[CONF_STATION_ID]
+        station = coordinator.data[self._station_id]
         self._attr_translation_key = fuel.name.lower()
-        self._attr_unique_id = f"{station.id}_{fuel.name.lower()}"
+        self._attr_unique_id = f"{self._station_id}_{fuel.name.lower()}"
         unit = UnitOfMass.KILOGRAMS if fuel in FUELS_PER_KG else UnitOfVolume.LITERS
         self._attr_native_unit_of_measurement = f"{CURRENCY_EURO}/{unit}"
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, station.id)},
-            name=f"{station.brand.title()} {station.locality.title()}",
+            identifiers={(DOMAIN, self._station_id)},
+            name=subentry.title,
             manufacturer=station.brand.title(),
             model=station.address.title(),
             entry_type=DeviceEntryType.SERVICE,
@@ -74,11 +95,14 @@ class FuelPriceSensor(CoordinatorEntity[GeoportalGasolinerasCoordinator], Sensor
     @property
     @override
     def available(self) -> bool:
-        """Return if the station still sells this fuel."""
-        return super().available and self._fuel in self.coordinator.data.prices
+        """Return if the station was fetched and still sells this fuel."""
+        station = self.coordinator.data.get(self._station_id)
+        return (
+            super().available and station is not None and self._fuel in station.prices
+        )
 
     @property
     @override
-    def native_value(self) -> float | None:
-        """Return the price."""
-        return self.coordinator.data.prices.get(self._fuel)
+    def native_value(self) -> float:
+        """Return the price; only called while available."""
+        return self.coordinator.data[self._station_id].prices[self._fuel]

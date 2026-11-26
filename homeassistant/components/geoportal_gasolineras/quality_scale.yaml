@@ -67,9 +67,7 @@ rules:
   docs-supported-functions: todo
   docs-troubleshooting: todo
   docs-use-cases: todo
-  dynamic-devices:
-    status: exempt
-    comment: Each config entry is a single fuel station.
+  dynamic-devices: done
   entity-category: done
   entity-device-class:
     status: exempt
@@ -82,13 +80,13 @@ rules:
   icon-translations: done
   reconfiguration-flow:
     status: exempt
-    comment: A config entry is a fixed fuel station; nothing can be changed.
+    comment: The config entry has no settings; stations are added and removed as subentries.
   repair-issues:
     status: exempt
     comment: There are no issues the user can repair.
   stale-devices:
     status: exempt
-    comment: Each config entry is a single fuel station.
+    comment: Each station is a subentry; removing it removes its device.
 
   # Platinum
   async-dependency: done

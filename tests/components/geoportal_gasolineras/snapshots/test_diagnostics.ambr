@@ -3,9 +3,6 @@
   dict({
     'entry': dict({
       'data': dict({
-        'municipality_id': '6139',
-        'province_id': '41',
-        'station_id': '7370',
       }),
       'disabled_by': None,
       'discovery_keys': dict({
@@ -18,30 +15,71 @@
       'pref_disable_polling': False,
       'source': 'user',
       'subentries': list([
+        dict({
+          'data': dict({
+            'municipality_id': '6139',
+            'province_id': '41',
+            'station_id': '7370',
+          }),
+          'subentry_id': '01M8CBBZT2P9AHZW5HW8HNW2M5',
+          'subentry_type': 'station',
+          'title': 'Repsol La Roda de Andalucía',
+          'unique_id': '7370',
+        }),
+        dict({
+          'data': dict({
+            'station_id': '9683',
+          }),
+          'subentry_id': '01M8CBBZT2PZ0D1X71N1TV8W1Z',
+          'subentry_type': 'station',
+          'title': 'Cooperativa La Roda de Andalucía',
+          'unique_id': '9683',
+        }),
       ]),
-      'title': 'Repsol Roda De Andalucia (La)',
-      'unique_id': '7370',
+      'title': 'Spain fuel prices',
+      'unique_id': None,
       'version': 1,
     }),
-    'station': dict({
-      'address': 'CARRETERA MALAGA, GRANADA, SEVILLA KM. 124,90',
-      'brand': 'REPSOL',
-      'id': '7370',
-      'latitude': 37.214444,
-      'locality': 'RODA DE ANDALUCIA (LA)',
-      'longitude': -4.777056,
-      'municipality': 'Roda de Andalucía (La)',
-      'municipality_id': '6139',
-      'postal_code': '41590',
-      'prices': dict({
-        'Gasoleo A': 1.825,
-        'Gasoleo Premium': 1.875,
-        'Gasolina 95 E5': 1.575,
+    'stations': dict({
+      '7370': dict({
+        'address': 'CARRETERA MALAGA, GRANADA, SEVILLA KM. 124,90',
+        'brand': 'REPSOL',
+        'id': '7370',
+        'latitude': 37.214444,
+        'locality': 'RODA DE ANDALUCIA (LA)',
+        'longitude': -4.777056,
+        'municipality': 'Roda de Andalucía (La)',
+        'municipality_id': '6139',
+        'postal_code': '41590',
+        'prices': dict({
+          'Gasoleo A': 1.825,
+          'Gasoleo Premium': 1.875,
+          'Gasolina 95 E5': 1.575,
+        }),
+        'province': 'SEVILLA',
+        'province_id': '41',
+        'sale_type': 'P',
+        'schedule': 'L-S: 07:00-22:00',
       }),
-      'province': 'SEVILLA',
-      'province_id': '41',
-      'sale_type': 'P',
-      'schedule': 'L-S: 07:00-22:00',
+      '9683': dict({
+        'address': 'CARRETERA DE PEDRERA KM. 2',
+        'brand': 'COOPERATIVA',
+        'id': '9683',
+        'latitude': 37.195583,
+        'locality': 'RODA DE ANDALUCIA (LA)',
+        'longitude': -4.797972,
+        'municipality': 'Roda de Andalucía (La)',
+        'municipality_id': None,
+        'postal_code': '41590',
+        'prices': dict({
+          'Gasoleo A': 1.802,
+          'Gasoleo B': 1.477,
+        }),
+        'province': 'SEVILLA',
+        'province_id': None,
+        'sale_type': 'R',
+        'schedule': 'L-D: 24H',
+      }),
     }),
   })
 # ---

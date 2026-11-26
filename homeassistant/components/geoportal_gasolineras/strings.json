@@ -1,53 +1,72 @@
 {
   "config": {
     "abort": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_service%]",
-      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]"
+      "single_instance_allowed": "[%key:common::config_flow::abort::single_instance_allowed%]"
     },
     "error": {
-      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
-      "no_stations": "There are no fuel stations in this municipality.",
-      "station_not_found": "There is no fuel station with this code."
+      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]"
     },
     "step": {
-      "municipality": {
-        "data": {
-          "municipality_id": "Municipality"
-        },
-        "data_description": {
-          "municipality_id": "Municipality where the fuel station is."
-        }
-      },
-      "province": {
-        "data": {
-          "province_id": "Province"
-        },
-        "data_description": {
-          "province_id": "Province where the fuel station is."
-        }
-      },
-      "station": {
-        "data": {
-          "station_id": "Fuel station"
-        },
-        "data_description": {
-          "station_id": "Fuel station whose prices you want to follow."
-        }
-      },
-      "station_code": {
-        "data": {
-          "station_id": "Station code"
-        },
-        "data_description": {
-          "station_id": "Code of the fuel station, shown on the Geoportal Gasolineras website."
-        }
-      },
       "user": {
-        "menu_options": {
-          "province": "Choose from a list",
-          "station_code": "Enter the station code"
+        "description": "Follow the prices of Spanish fuel stations. After adding the integration, add each station with **Add fuel station**."
+      }
+    }
+  },
+  "config_subentries": {
+    "station": {
+      "abort": {
+        "already_configured": "This fuel station is already added.",
+        "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]"
+      },
+      "entry_type": "Fuel station",
+      "error": {
+        "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+        "no_stations": "There are no fuel stations in this municipality.",
+        "station_not_found": "There is no fuel station with this code."
+      },
+      "initiate_flow": {
+        "user": "Add fuel station"
+      },
+      "step": {
+        "municipality": {
+          "data": {
+            "municipality_id": "Municipality"
+          },
+          "data_description": {
+            "municipality_id": "Municipality where the fuel station is."
+          }
         },
-        "description": "Choose a fuel station from a list by province and municipality, or enter its code. Stations that only sell to members or fleets, such as cooperatives, can only be added by code."
+        "province": {
+          "data": {
+            "province_id": "Province"
+          },
+          "data_description": {
+            "province_id": "Province where the fuel station is."
+          }
+        },
+        "station": {
+          "data": {
+            "station_id": "Fuel station"
+          },
+          "data_description": {
+            "station_id": "Fuel station whose prices you want to follow."
+          }
+        },
+        "station_code": {
+          "data": {
+            "station_id": "Station code"
+          },
+          "data_description": {
+            "station_id": "Code of the fuel station, shown on the Geoportal Gasolineras website."
+          }
+        },
+        "user": {
+          "menu_options": {
+            "province": "Choose from a list",
+            "station_code": "Enter the station code"
+          },
+          "description": "Choose a fuel station from a list by province and municipality, or enter its code. Stations that only sell to members or fleets, such as cooperatives, can only be added by code."
+        }
       }
     }
   },
@@ -127,9 +146,6 @@
   "exceptions": {
     "cannot_connect": {
       "message": "Error communicating with the Geoportal Gasolineras service."
-    },
-    "station_not_found": {
-      "message": "Fuel station {station_id} is no longer listed in its municipality."
     }
   }
 }

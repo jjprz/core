@@ -4,6 +4,8 @@ from datetime import timedelta
 
 DOMAIN = "geoportal_gasolineras"
 
+SUBENTRY_TYPE_STATION = "station"
+
 CONF_PROVINCE_ID = "province_id"
 CONF_MUNICIPALITY_ID = "municipality_id"
 CONF_STATION_ID = "station_id"

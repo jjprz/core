@@ -17,6 +17,10 @@ from homeassistant.const import STATE_UNAVAILABLE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 
+REPSOL_DIESEL = "sensor.repsol_la_roda_de_andalucia_diesel_a"
+REPSOL_E5 = "sensor.repsol_la_roda_de_andalucia_gasoline_95_e5"
+COOPERATIVA_DIESEL_B = "sensor.cooperativa_la_roda_de_andalucia_diesel_b"
+
 
 async def test_sensors(
     hass: HomeAssistant,
@@ -25,45 +29,53 @@ async def test_sensors(
     entity_registry: er.EntityRegistry,
     snapshot: SnapshotAssertion,
 ) -> None:
-    """Test a sensor is created for each fuel the station sells."""
+    """Test a sensor is created for each fuel each station sells."""
     mock_config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
     await hass.async_block_till_done()
     await snapshot_platform(hass, entity_registry, snapshot, mock_config_entry.entry_id)
 
 
-async def test_unavailable(
+async def _tick(hass: HomeAssistant, freezer: FrozenDateTimeFactory) -> None:
+    freezer.tick(SCAN_INTERVAL)
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+
+async def test_updates(
     hass: HomeAssistant,
     mock_client: AsyncMock,
     mock_config_entry: MockConfigEntry,
     freezer: FrozenDateTimeFactory,
 ) -> None:
-    """Test sensors become unavailable on errors and when a fuel is dropped."""
+    """Test dropped fuels, new fuels, missing stations and errors."""
     mock_config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
     await hass.async_block_till_done()
-    entity_id = "sensor.repsol_roda_de_andalucia_la_diesel_a"
-    assert hass.states.get(entity_id).state == "1.825"
+    assert hass.states.get(REPSOL_DIESEL).state == "1.825"
 
-    station = mock_client.get_station.return_value
-    mock_client.get_station.return_value = replace(
-        station,
-        prices={k: v for k, v in station.prices.items() if k is not FuelType.DIESEL_A},
+    # The Repsol stops selling diesel A and starts selling LPG
+    stations = mock_client.get_stations_by_municipality.return_value
+    repsol = stations.stations[0]
+    prices = {k: v for k, v in repsol.prices.items() if k is not FuelType.DIESEL_A}
+    prices[FuelType.LPG] = 0.999
+    mock_client.get_stations_by_municipality.return_value = replace(
+        stations, stations=[replace(repsol, prices=prices)]
     )
-    freezer.tick(SCAN_INTERVAL)
-    async_fire_time_changed(hass)
-    await hass.async_block_till_done()
-    assert hass.states.get(entity_id).state == STATE_UNAVAILABLE
-    assert (
-        hass.states.get("sensor.repsol_roda_de_andalucia_la_gasoline_95_e5").state
-        == "1.575"
-    )
+    await _tick(hass, freezer)
+    assert hass.states.get(REPSOL_DIESEL).state == STATE_UNAVAILABLE
+    assert hass.states.get(REPSOL_E5).state == "1.575"
+    assert hass.states.get("sensor.repsol_la_roda_de_andalucia_lpg").state == "0.999"
 
-    mock_client.get_station.side_effect = PreciosCarburantesConnectionError
-    freezer.tick(SCAN_INTERVAL)
-    async_fire_time_changed(hass)
-    await hass.async_block_till_done()
-    assert (
-        hass.states.get("sensor.repsol_roda_de_andalucia_la_gasoline_95_e5").state
-        == STATE_UNAVAILABLE
+    # The cooperative cannot be fetched: only its sensors become unavailable
+    mock_client.get_station_by_id.side_effect = PreciosCarburantesConnectionError
+    await _tick(hass, freezer)
+    assert hass.states.get(COOPERATIVA_DIESEL_B).state == STATE_UNAVAILABLE
+    assert hass.states.get(REPSOL_E5).state == "1.575"
+
+    # Nothing can be fetched
+    mock_client.get_stations_by_municipality.side_effect = (
+        PreciosCarburantesConnectionError
     )
+    await _tick(hass, freezer)
+    assert hass.states.get(REPSOL_E5).state == STATE_UNAVAILABLE
