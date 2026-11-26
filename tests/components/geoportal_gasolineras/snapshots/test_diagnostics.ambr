@@ -1,0 +1,47 @@
+# serializer version: 1
+# name: test_diagnostics
+  dict({
+    'entry': dict({
+      'data': dict({
+        'municipality_id': '6139',
+        'province_id': '41',
+        'station_id': '7370',
+      }),
+      'disabled_by': None,
+      'discovery_keys': dict({
+      }),
+      'domain': 'geoportal_gasolineras',
+      'minor_version': 1,
+      'options': dict({
+      }),
+      'pref_disable_new_entities': False,
+      'pref_disable_polling': False,
+      'source': 'user',
+      'subentries': list([
+      ]),
+      'title': 'Repsol Roda De Andalucia (La)',
+      'unique_id': '7370',
+      'version': 1,
+    }),
+    'station': dict({
+      'address': 'CARRETERA MALAGA, GRANADA, SEVILLA KM. 124,90',
+      'brand': 'REPSOL',
+      'id': '7370',
+      'latitude': 37.214444,
+      'locality': 'RODA DE ANDALUCIA (LA)',
+      'longitude': -4.777056,
+      'municipality': 'Roda de Andalucía (La)',
+      'municipality_id': '6139',
+      'postal_code': '41590',
+      'prices': dict({
+        'Gasoleo A': 1.825,
+        'Gasoleo Premium': 1.875,
+        'Gasolina 95 E5': 1.575,
+      }),
+      'province': 'SEVILLA',
+      'province_id': '41',
+      'sale_type': 'P',
+      'schedule': 'L-S: 07:00-22:00',
+    }),
+  })
+# ---

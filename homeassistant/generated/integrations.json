@@ -5348,6 +5348,15 @@
         }
       }
     },
+    "geoportal_gasolineras": {
+      "name": "Spain fuel prices (Geoportal Gasolineras)",
+      "integration_type": "service",
+      "categories": [
+        "local_services"
+      ],
+      "config_flow": true,
+      "iot_class": "cloud_polling"
+    },
     "geosphere_austria": {
       "name": "GeoSphere Austria",
       "integrations": {
