@@ -1,5 +1,14 @@
 {
   "entity": {
+    "binary_sensor": {
+      "open": {
+        "default": "mdi:store-clock",
+        "state": {
+          "off": "mdi:store-off",
+          "on": "mdi:store"
+        }
+      }
+    },
     "sensor": {
       "adblue": {
         "default": "mdi:water"

@@ -8,7 +8,7 @@ from .coordinator import (
     GeoportalGasolinerasCoordinator,
 )
 
-PLATFORMS = [Platform.SENSOR]
+PLATFORMS = [Platform.BINARY_SENSOR, Platform.SENSOR]
 
 
 async def async_setup_entry(

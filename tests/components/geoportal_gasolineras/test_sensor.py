@@ -1,7 +1,7 @@
 """Tests for the Spain fuel prices (Geoportal Gasolineras) sensors."""
 
 from dataclasses import replace
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 
 from aioprecioscarburantes import FuelType, PreciosCarburantesConnectionError
 from freezegun.api import FrozenDateTimeFactory
@@ -13,7 +13,7 @@ from pytest_homeassistant.common import (
 from syrupy.assertion import SnapshotAssertion
 
 from homeassistant.components.geoportal_gasolineras.const import SCAN_INTERVAL
-from homeassistant.const import ATTR_UNIT_OF_MEASUREMENT, STATE_UNAVAILABLE
+from homeassistant.const import ATTR_UNIT_OF_MEASUREMENT, STATE_UNAVAILABLE, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 
@@ -30,8 +30,11 @@ async def test_sensors(
 ) -> None:
     """Test a sensor is created for each fuel each station sells."""
     mock_config_entry.add_to_hass(hass)
-    await hass.config_entries.async_setup(mock_config_entry.entry_id)
-    await hass.async_block_till_done()
+    with patch(
+        "homeassistant.components.geoportal_gasolineras.PLATFORMS", [Platform.SENSOR]
+    ):
+        await hass.config_entries.async_setup(mock_config_entry.entry_id)
+        await hass.async_block_till_done()
     await snapshot_platform(hass, entity_registry, snapshot, mock_config_entry.entry_id)
 
 

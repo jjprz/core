@@ -1,0 +1,103 @@
+# serializer version: 1
+# name: test_open_sensors[binary_sensor.repsol_la_roda_de_andalucia_open-entry]
+  EntityRegistryEntrySnapshot({
+    'aliases': list([
+      None,
+    ]),
+    'area_id': None,
+    'capabilities': None,
+    'config_entry_id': <ANY>,
+    'config_subentry_id': <ConfigSubentry subentry_type='station' title='Repsol La Roda de Andalucía'>,
+    'device_class': None,
+    'device_id': <DeviceEntry identifiers=[('geoportal_gasolineras', '7370')]>,
+    'disabled_by': None,
+    'domain': 'binary_sensor',
+    'entity_category': None,
+    'entity_id': 'binary_sensor.repsol_la_roda_de_andalucia_open',
+    'has_entity_name': True,
+    'hidden_by': None,
+    'icon': None,
+    'id': <ANY>,
+    'labels': set({
+    }),
+    'name': None,
+    'object_id_base': 'Open',
+    'options': dict({
+    }),
+    'original_device_class': None,
+    'original_icon': None,
+    'original_name': 'Open',
+    'platform': 'geoportal_gasolineras',
+    'previous_unique_id': None,
+    'suggested_object_id': None,
+    'supported_features': 0,
+    'translation_key': 'open',
+    'unique_id': '7370_open',
+    'unit_of_measurement': None,
+  })
+# ---
+# name: test_open_sensors[binary_sensor.repsol_la_roda_de_andalucia_open-state]
+  StateSnapshot({
+    'attributes': ReadOnlyDict({
+      <EntityStateAttribute.ATTRIBUTION: 'attribution'>: 'Data provided by the Spanish Ministry (Geoportal Gasolineras)',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Repsol La Roda de Andalucía Open',
+    }),
+    'context': <ANY>,
+    'entity_id': 'binary_sensor.repsol_la_roda_de_andalucia_open',
+    'last_changed': <ANY>,
+    'last_reported': <ANY>,
+    'last_updated': <ANY>,
+    'state': 'on',
+  })
+# ---
+# name: test_open_sensors[binary_sensor.shell_la_roda_de_andalucia_open-entry]
+  EntityRegistryEntrySnapshot({
+    'aliases': list([
+      None,
+    ]),
+    'area_id': None,
+    'capabilities': None,
+    'config_entry_id': <ANY>,
+    'config_subentry_id': <ConfigSubentry subentry_type='station' title='Shell La Roda de Andalucía'>,
+    'device_class': None,
+    'device_id': <DeviceEntry identifiers=[('geoportal_gasolineras', '6440')]>,
+    'disabled_by': None,
+    'domain': 'binary_sensor',
+    'entity_category': None,
+    'entity_id': 'binary_sensor.shell_la_roda_de_andalucia_open',
+    'has_entity_name': True,
+    'hidden_by': None,
+    'icon': None,
+    'id': <ANY>,
+    'labels': set({
+    }),
+    'name': None,
+    'object_id_base': 'Open',
+    'options': dict({
+    }),
+    'original_device_class': None,
+    'original_icon': None,
+    'original_name': 'Open',
+    'platform': 'geoportal_gasolineras',
+    'previous_unique_id': None,
+    'suggested_object_id': None,
+    'supported_features': 0,
+    'translation_key': 'open',
+    'unique_id': '6440_open',
+    'unit_of_measurement': None,
+  })
+# ---
+# name: test_open_sensors[binary_sensor.shell_la_roda_de_andalucia_open-state]
+  StateSnapshot({
+    'attributes': ReadOnlyDict({
+      <EntityStateAttribute.ATTRIBUTION: 'attribution'>: 'Data provided by the Spanish Ministry (Geoportal Gasolineras)',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Shell La Roda de Andalucía Open',
+    }),
+    'context': <ANY>,
+    'entity_id': 'binary_sensor.shell_la_roda_de_andalucia_open',
+    'last_changed': <ANY>,
+    'last_reported': <ANY>,
+    'last_updated': <ANY>,
+    'state': 'on',
+  })
+# ---

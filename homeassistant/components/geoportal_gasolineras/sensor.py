@@ -2,7 +2,7 @@
 
 from typing import override
 
-from aioprecioscarburantes import FuelType, Station
+from aioprecioscarburantes import FuelType
 
 from homeassistant.components.sensor import (
     SensorEntity,
@@ -12,22 +12,14 @@ from homeassistant.components.sensor import (
 from homeassistant.config_entries import ConfigSubentry
 from homeassistant.const import CURRENCY_EURO, UnitOfMass, UnitOfVolume
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import (
-    ATTRIBUTION,
-    CONF_STATION_ID,
-    CONFIGURATION_URL,
-    DOMAIN,
-    SUBENTRY_TYPE_STATION,
-)
+from .const import CONF_STATION_ID, SUBENTRY_TYPE_STATION
 from .coordinator import (
     GeoportalGasolinerasConfigEntry,
     GeoportalGasolinerasCoordinator,
 )
-from .names import brand_name, clean_address
+from .entity import StationEntity
 
 # Coordinator is used to centralize the data updates
 PARALLEL_UPDATES = 0
@@ -86,11 +78,8 @@ async def async_setup_entry(
     entry.async_on_unload(coordinator.async_add_listener(async_add_sensors))
 
 
-class FuelPriceSensor(CoordinatorEntity[GeoportalGasolinerasCoordinator], SensorEntity):
+class FuelPriceSensor(StationEntity, SensorEntity):
     """Price of one fuel at a station."""
-
-    _attr_attribution = ATTRIBUTION
-    _attr_has_entity_name = True
 
     def __init__(
         self,
@@ -99,30 +88,15 @@ class FuelPriceSensor(CoordinatorEntity[GeoportalGasolinerasCoordinator], Sensor
         fuel: FuelType,
     ) -> None:
         """Initialize the sensor."""
-        super().__init__(coordinator)
-        self._fuel = fuel
         self.entity_description = FUEL_SENSORS[fuel]
-        self._station_id: str = subentry.data[CONF_STATION_ID]
-        station = coordinator.data[self._station_id]
-        self._attr_unique_id = f"{self._station_id}_{self.entity_description.key}"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self._station_id)},
-            name=subentry.title,
-            manufacturer=brand_name(station.brand),
-            model=clean_address(station.address),
-            entry_type=DeviceEntryType.SERVICE,
-            configuration_url=CONFIGURATION_URL,
-        )
-
-    @property
-    def _station(self) -> Station | None:
-        return self.coordinator.data.get(self._station_id)
+        super().__init__(coordinator, subentry, self.entity_description.key)
+        self._fuel = fuel
 
     @property
     @override
     def available(self) -> bool:
         """Return if the station was fetched and still sells this fuel."""
-        station = self._station
+        station = self.station
         return (
             super().available and station is not None and self._fuel in station.prices
         )

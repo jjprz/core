@@ -52,6 +52,11 @@
     }
   },
   "entity": {
+    "binary_sensor": {
+      "open": {
+        "name": "Open"
+      }
+    },
     "sensor": {
       "adblue": {
         "name": "AdBlue"
