@@ -17,6 +17,7 @@ from homeassistant.util import dt as dt_util
 
 from .const import CONF_FUEL, CONF_STATION_ID, DOMAIN, SUBENTRY_TYPE_STATION
 from .coordinator import GeoportalGasolinerasConfigEntry
+from .names import clean_address, municipality_name
 
 SERVICE_GET_PRICES = "get_prices"
 
@@ -52,8 +53,8 @@ async def _async_get_prices(call: ServiceCall) -> ServiceResponse:
         item: dict[str, Any] = {
             "name": subentry.title,
             "station_id": station.id,
-            "address": station.address.title(),
-            "municipality": station.municipality,
+            "address": clean_address(station.address),
+            "municipality": municipality_name(station.municipality),
             "open": None if schedule is None else schedule.is_open(now),
         }
         if fuel is None:

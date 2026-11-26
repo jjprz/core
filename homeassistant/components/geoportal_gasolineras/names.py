@@ -23,6 +23,11 @@ def brand_name(brand: str) -> str:
     return brand if len(brand) <= 3 else brand.title()
 
 
+def clean_address(address: str) -> str:
+    """Return the address in title case, without repeated spaces or commas."""
+    return " ".join(address.split()).strip(" ,").title()
+
+
 def station_name(station: Station, taken: set[str]) -> str:
     """Return brand and municipality, adding the address if the name is taken."""
     brand = brand_name(station.brand)
@@ -34,5 +39,5 @@ def station_name(station: Station, taken: set[str]) -> str:
         else f"{brand} {municipality}"
     )
     if name in taken:
-        name = f"{name} ({station.address.title()})"
+        name = f"{name} ({clean_address(station.address)})"
     return name

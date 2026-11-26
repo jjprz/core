@@ -46,7 +46,7 @@ from .const import (
     SUBENTRY_TYPE_STATION,
     SUBENTRY_TYPE_ZONE,
 )
-from .names import brand_name, municipality_name, station_name
+from .names import brand_name, clean_address, municipality_name, station_name
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -63,8 +63,7 @@ def _selector(options: list[SelectOptionDict], *, sort: bool = True) -> SelectSe
 
 
 def _station_label(station: Station) -> str:
-    address = " ".join(station.address.split()).strip(" ,")
-    return f"{brand_name(station.brand)} – {address.title()}"
+    return f"{brand_name(station.brand)} – {clean_address(station.address)}"
 
 
 class GeoportalGasolinerasConfigFlow(ConfigFlow, domain=DOMAIN):

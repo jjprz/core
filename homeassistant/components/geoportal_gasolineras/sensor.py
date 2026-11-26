@@ -41,7 +41,7 @@ from .coordinator import (
     GeoportalGasolinerasCoordinator,
 )
 from .entity import StationEntity
-from .names import brand_name
+from .names import brand_name, clean_address
 
 # Coordinator is used to centralize the data updates
 PARALLEL_UPDATES = 0
@@ -223,7 +223,7 @@ class ZoneSensor(CoordinatorEntity[GeoportalGasolinerasCoordinator], SensorEntit
         if self._key == "average_price":
             return round(mean(prices), 3)
         cheapest = min(selling, key=lambda station: station.prices[self._fuel])
-        return f"{brand_name(cheapest.brand)} – {cheapest.address.title()}"
+        return f"{brand_name(cheapest.brand)} – {clean_address(cheapest.address)}"
 
     @property
     @override
@@ -231,9 +231,10 @@ class ZoneSensor(CoordinatorEntity[GeoportalGasolinerasCoordinator], SensorEntit
         """Return the id and price of the cheapest station."""
         if self._key != "cheapest_station":
             return None
-        cheapest = min(self._selling(), key=lambda station: station.prices[self._fuel])
+        selling = self._selling()
+        cheapest = min(selling, key=lambda station: station.prices[self._fuel])
         return {
             CONF_STATION_ID: cheapest.id,
             "price": cheapest.prices[self._fuel],
-            "stations": len(self._selling()),
+            "stations": len(selling),
         }

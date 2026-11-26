@@ -22,10 +22,13 @@ def _subentry_id(entry: MockConfigEntry, unique_id: str) -> str:
     )
 
 
-async def _tick(hass: HomeAssistant, freezer: FrozenDateTimeFactory) -> None:
-    freezer.tick(SCAN_INTERVAL)
-    async_fire_time_changed(hass)
-    await hass.async_block_till_done()
+async def _tick(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory, times: int = 1
+) -> None:
+    for _ in range(times):
+        freezer.tick(SCAN_INTERVAL)
+        async_fire_time_changed(hass)
+        await hass.async_block_till_done()
 
 
 def _remove(mock_client: AsyncMock, unique_id: str) -> None:
@@ -54,7 +57,10 @@ async def test_issue_comes_and_goes(
     issue_id = f"station_removed_{_subentry_id(mock_config_entry, unique_id)}"
     stations = mock_client.get_stations_by_municipality.return_value
 
+    # Missing twice is taken for a hiccup of the service
     _remove(mock_client, unique_id)
+    await _tick(hass, freezer, 2)
+    assert not issue_registry.async_get_issue(DOMAIN, issue_id)
     await _tick(hass, freezer)
     assert issue_registry.async_get_issue(DOMAIN, issue_id)
 
@@ -76,7 +82,7 @@ async def test_fix_removes_station(
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
     subentry_id = _subentry_id(mock_config_entry, "9683")
     _remove(mock_client, "9683")
-    await _tick(hass, freezer)
+    await _tick(hass, freezer, 3)
 
     manager = repairs_flow_manager(hass)
     assert manager is not None

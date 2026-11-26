@@ -27,7 +27,7 @@ async def test_get_prices(
                 "name": "Repsol La Roda de Andalucía",
                 "station_id": "7370",
                 "address": "Carretera Malaga, Granada, Sevilla Km. 124,90",
-                "municipality": "Roda de Andalucía (La)",
+                "municipality": "La Roda de Andalucía",
                 "open": True,
                 "prices": {
                     "diesel_a": 1.825,
@@ -39,7 +39,7 @@ async def test_get_prices(
                 "name": "Cooperativa La Roda de Andalucía",
                 "station_id": "9683",
                 "address": "Carretera De Pedrera Km. 2",
-                "municipality": "Roda de Andalucía (La)",
+                "municipality": "La Roda de Andalucía",
                 "open": True,
                 "prices": {"diesel_a": 1.802, "diesel_b": 1.477},
             },

@@ -10,6 +10,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import ATTRIBUTION, CONF_STATION_ID, CONFIGURATION_URL, DOMAIN
 from .coordinator import GeoportalGasolinerasCoordinator
+from .names import brand_name, clean_address
 
 
 class StationEntity(CoordinatorEntity[GeoportalGasolinerasCoordinator]):
@@ -32,8 +33,8 @@ class StationEntity(CoordinatorEntity[GeoportalGasolinerasCoordinator]):
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self._station_id)},
             name=subentry.title,
-            manufacturer=station.brand.title(),
-            model=station.address.title(),
+            manufacturer=brand_name(station.brand),
+            model=clean_address(station.address),
             entry_type=DeviceEntryType.SERVICE,
             configuration_url=CONFIGURATION_URL,
         )

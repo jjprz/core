@@ -30,6 +30,10 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# A station must be missing this many updates in a row (1.5 hours) before the
+# repair issue is raised, so a hiccup of the service is not taken for a closure
+MISSES_BEFORE_ISSUE = 3
+
 type GeoportalGasolinerasConfigEntry = ConfigEntry[GeoportalGasolinerasCoordinator]
 
 
@@ -67,6 +71,8 @@ class GeoportalGasolinerasCoordinator(DataUpdateCoordinator[GeoportalGasolineras
             update_interval=SCAN_INTERVAL,
         )
         self.client = PreciosCarburantes(session=async_get_clientsession(hass))
+        # Consecutive updates in which each station was missing, by subentry id
+        self._misses: dict[str, int] = {}
 
     @override
     async def _async_update_data(self) -> GeoportalGasolinerasData:
@@ -106,7 +112,7 @@ class GeoportalGasolinerasCoordinator(DataUpdateCoordinator[GeoportalGasolineras
                 if station := listed.get(station_id):
                     data.stations[station_id] = station
                     data.updated_at[station_id] = result.updated_at
-                self._update_removed_issue(subentry, removed=station is None)
+                self._update_removed_issue(subentry, missing=station is None)
         for subentry in by_code:
             requests += 1
             station_id = subentry.data[CONF_STATION_ID]
@@ -115,12 +121,12 @@ class GeoportalGasolinerasCoordinator(DataUpdateCoordinator[GeoportalGasolineras
                     station_id
                 )
             except PreciosCarburantesNotFoundError:
-                self._update_removed_issue(subentry, removed=True)
+                self._update_removed_issue(subentry, missing=True)
             except PreciosCarburantesError as err:
                 _LOGGER.debug("Cannot fetch station %s: %s", station_id, err)
                 failed += 1
             else:
-                self._update_removed_issue(subentry, removed=False)
+                self._update_removed_issue(subentry, missing=False)
 
         if failed and failed == requests:
             raise UpdateFailed(
@@ -129,11 +135,17 @@ class GeoportalGasolinerasCoordinator(DataUpdateCoordinator[GeoportalGasolineras
             )
         return data
 
-    def _update_removed_issue(self, subentry: ConfigSubentry, *, removed: bool) -> None:
-        """Offer to delete a station that is no longer listed."""
+    def _update_removed_issue(self, subentry: ConfigSubentry, *, missing: bool) -> None:
+        """Offer to delete a station that has not been listed for a while."""
         issue_id = removed_issue_id(subentry)
-        if not removed:
+        if not missing:
+            self._misses.pop(subentry.subentry_id, None)
             ir.async_delete_issue(self.hass, DOMAIN, issue_id)
+            return
+        misses = self._misses[subentry.subentry_id] = (
+            self._misses.get(subentry.subentry_id, 0) + 1
+        )
+        if misses < MISSES_BEFORE_ISSUE:
             return
         ir.async_create_issue(
             self.hass,

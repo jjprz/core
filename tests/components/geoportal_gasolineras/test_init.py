@@ -3,11 +3,13 @@
 from unittest.mock import AsyncMock
 
 from aioprecioscarburantes import PreciosCarburantesConnectionError
-from pytest_homeassistant.common import MockConfigEntry
+from freezegun.api import FrozenDateTimeFactory
+from pytest_homeassistant.common import MockConfigEntry, async_fire_time_changed
 
 from homeassistant.components.geoportal_gasolineras.const import (
     CONF_MUNICIPALITY_ID,
     CONF_STATION_ID,
+    SCAN_INTERVAL,
     SUBENTRY_TYPE_STATION,
 )
 from homeassistant.config_entries import ConfigEntryState, ConfigSubentry
@@ -42,7 +44,10 @@ async def test_setup_retry_when_all_fail(
 
 
 async def test_partial_failure(
-    hass: HomeAssistant, mock_client: AsyncMock, mock_config_entry: MockConfigEntry
+    hass: HomeAssistant,
+    mock_client: AsyncMock,
+    mock_config_entry: MockConfigEntry,
+    freezer: FrozenDateTimeFactory,
 ) -> None:
     """Test a station that cannot be fetched does not stop the others."""
     mock_client.get_station_by_id.side_effect = PreciosCarburantesConnectionError
@@ -51,6 +56,20 @@ async def test_partial_failure(
     assert mock_config_entry.state is ConfigEntryState.LOADED
     assert hass.states.get("sensor.repsol_la_roda_de_andalucia_diesel_a")
     assert hass.states.get("sensor.cooperativa_la_roda_de_andalucia_diesel_a") is None
+    assert (
+        hass.states.get("binary_sensor.cooperativa_la_roda_de_andalucia_open") is None
+    )
+
+    # It comes back: all its entities are added
+    mock_client.get_station_by_id.side_effect = None
+    freezer.tick(SCAN_INTERVAL)
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+    assert hass.states.get("sensor.cooperativa_la_roda_de_andalucia_diesel_a")
+    assert (
+        hass.states.get("binary_sensor.cooperativa_la_roda_de_andalucia_open").state
+        == "on"
+    )
 
 
 async def test_reload_on_new_station(

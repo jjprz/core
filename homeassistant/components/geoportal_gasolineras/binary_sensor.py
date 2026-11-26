@@ -24,14 +24,24 @@ async def async_setup_entry(
     entry: GeoportalGasolinerasConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up an open sensor for each station."""
+    """Set up an open sensor for each station, also for stations fetched later."""
     coordinator = entry.runtime_data
-    for subentry in entry.get_subentries_of_type(SUBENTRY_TYPE_STATION):
-        if subentry.data[CONF_STATION_ID] in coordinator.data.stations:
+    added: set[str] = set()
+
+    @callback
+    def async_add_open_sensors() -> None:
+        for subentry in entry.get_subentries_of_type(SUBENTRY_TYPE_STATION):
+            station_id: str = subentry.data[CONF_STATION_ID]
+            if station_id in added or station_id not in coordinator.data.stations:
+                continue
+            added.add(station_id)
             async_add_entities(
                 [OpenSensor(coordinator, subentry, "open")],
                 config_subentry_id=subentry.subentry_id,
             )
+
+    async_add_open_sensors()
+    entry.async_on_unload(coordinator.async_add_listener(async_add_open_sensors))
 
 
 class OpenSensor(StationEntity, BinarySensorEntity):
